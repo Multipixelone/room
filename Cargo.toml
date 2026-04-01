@@ -5,6 +5,9 @@ edition = "2021"
 authors = ["Lucas Rosa <x@rvcas.dev>"]
 publish = false
 
+[profile.release]
+strip = "symbols"
+
 [dependencies]
 ansi_term = "0.12.1"
 chrono = "0.4.26"

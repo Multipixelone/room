@@ -88,8 +88,8 @@
           };
         };
 
-        packages.default = rustPlatform.buildRustPackage rec {
-          name = "room";
+        builtPlugin = rustPlatform.buildRustPackage {
+          name = "room-wasm";
           src = ./.;
           cargoLock.lockFile = ./Cargo.lock;
           doCheck = false;
@@ -101,10 +101,18 @@
           '';
 
           installPhase = ''
-            mkdir -p $out/lib/zellij/plugins
-            cp target/${buildTarget}/release/${name}.wasm $out/lib/zellij/plugins
+            mkdir -p $out
+            cp target/${buildTarget}/release/room.wasm $out/
           '';
         };
+
+        packages.default = pkgs.runCommand "room" {
+          nativeBuildInputs = [ pkgs.removeReferencesTo ];
+        } ''
+          mkdir -p $out/lib/zellij/plugins
+          cp ${builtPlugin}/room.wasm $out/lib/zellij/plugins/
+          remove-references-to -t ${rust} $out/lib/zellij/plugins/room.wasm
+        '';
       in
       {
         inherit packages;
